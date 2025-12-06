@@ -758,6 +758,19 @@ Fixed memory leak in parser
 Changed API parameter order (breaking change)
 ```
 
+### Why Use Pull Requests?
+
+!!! tip "Pull requests let you take a second look at your code before merging, helping you catch mistakes early."
+
+In addition, PRs trigger automated quality checks that don't run on direct pushes:
+
+- **Documentation**: Verifies `cargo doc` compiles without errors
+- **Linter**: Treats `cargo clippy` warnings as errors  
+- **Formatter**: Ensures code matches `rustfmt` standards
+
+!!! tip "Releases (Tags) also run these checks"
+    Publishing is blocked until quality standards are met.
+
 ## Publishing Releases
 
 Publishing releases is largely automated through the CI workflow.

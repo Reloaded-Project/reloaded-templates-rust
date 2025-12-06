@@ -121,6 +121,17 @@ Automatically checks if your changes might break code for people who use your li
     
     *This check is performed using the `cargo-semver-checks` tool.*
 
+### Automated Quality Controls
+
+!!! info "Three quality gates run automatically on pull requests and tagged releases"
+
+- **Documentation**: Verifies `cargo doc` compiles without errors
+- **Linter**: Treats `cargo clippy` warnings as errors
+- **Formatter**: Ensures code matches `rustfmt` standards
+
+!!! info "When Do These Checks Run?"
+    By default, these checks run on **pull requests** and **tagged releases**.
+
 ## Publishing Your Library
 
 !!! tip "How to Publish?"
