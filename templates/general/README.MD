@@ -41,6 +41,16 @@ You'll need to set up an API key to publish to `NuGet` on tag.
 {% endif %}
 {% endif %}
 
+### Enable Auto-Delete Merged Branches
+
+Enable automatic deletion of merged branches:
+
+```bash
+gh repo edit --delete-branch-on-merge
+```
+
+Or via UI: **Settings > General > check "Automatically delete head branches"**
+
 ### Fill in README Documentation
 
 This repository uses a two-level README structure:

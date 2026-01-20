@@ -161,7 +161,7 @@ jobs:
         working-directory: src
         env:
           RUSTDOCFLAGS: "-D warnings"
-        run: cargo doc --workspace --all-features --document-private-items --target {% raw %}${{ matrix.target }}{% endraw %}
+        run: cargo doc --no-deps --workspace --all-features --document-private-items --target {% raw %}${{ matrix.target }}{% endraw %}
 
       - name: Run linter
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
