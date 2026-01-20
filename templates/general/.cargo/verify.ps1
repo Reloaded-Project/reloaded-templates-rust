@@ -21,6 +21,6 @@ Write-Host "Formatting..."
 cargo fmt --all
 
 Write-Host "Publish dry-run..."
-cargo publish --dry-run --quiet
+cargo publish --dry-run --quiet --workspace
 
 Write-Host "All checks passed!"
