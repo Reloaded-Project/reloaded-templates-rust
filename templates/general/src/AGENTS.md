@@ -41,13 +41,4 @@
 
 # Post-Change Verification
 
-All must pass without warnings:
-
-```bash
-cargo build --workspace --all-features --all-targets --quiet
-cargo test --workspace --all-features --quiet
-cargo clippy --workspace --all-features --quiet -- -D warnings
-cargo doc --workspace --all-features --quiet
-cargo fmt --all --quiet
-cargo publish --dry-run --quiet
-```
+Run `.cargo/verify.sh` (or `.cargo/verify.ps1` on Windows) from the workspace root.
