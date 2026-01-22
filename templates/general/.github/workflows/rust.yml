@@ -2,11 +2,15 @@ name: Rust
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     tags:
-      - '*'
+      - "*"
+    paths:
+      - "src/**"
   pull_request:
-    branches: [ main ]
+    branches: [main]
+    paths:
+      - "src/**"
   workflow_dispatch:
 
 {% if build_with_pgo %}
@@ -134,6 +138,7 @@ jobs:
           rust-project-path: src/cli
           workspace-path: src
           pgo-project-path: src/{{project-name}}
+          use-cache: false
 {%- endif %}
       # Note: The GitHub Runner Images will contain an up to date Rust Stable Toolchain
       #       thus as per recommendation of cargo-semver-checks, we're using stable here.
@@ -261,9 +266,9 @@ jobs:
           {%- endif %}
           compression-tool: 7z
           artifact-groups-file: .github/artifact-groups.yml
-          changelog-enabled: 'true'
+          changelog-enabled: "true"
           changelog-template: .github/changelog.hbs
           changelog-is-release: {% raw %}${{ startsWith(github.ref, 'refs/tags/') }}{% endraw %}
           changelog-release-tag: {% raw %}${{ github.ref_name }}{% endraw %}
-          changelog-override-starting-version: 'true'
-          changelog-hide-credit: 'true'
+          changelog-override-starting-version: "true"
+          changelog-hide-credit: "true"
