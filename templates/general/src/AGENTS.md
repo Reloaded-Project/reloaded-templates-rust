@@ -41,4 +41,4 @@
 
 # Post-Change Verification
 
-Run `.cargo/verify.sh` (or `.cargo/verify.ps1` on Windows) from the workspace root.
+Always run `.cargo/verify.sh` (or `.cargo/verify.ps1` on Windows) after changing code.
