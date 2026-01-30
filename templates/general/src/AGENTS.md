@@ -39,6 +39,6 @@
 - Focus comments on "why" not "what"
 - Use [`TypeName`] rustdoc links, not backticks.
 
-# Post-Change Verification
+# Verification
 
-Always run `.cargo/verify.sh` (or `.cargo/verify.ps1` on Windows) after changing code.
+After code changes or for checks (testing/linting/building/docs/formatting), run `.cargo/verify.sh` (`.cargo/verify.ps1` on Windows). It echoes each command and runs the full suite, including core tests and any extra checks. Do this before returning to the user.
