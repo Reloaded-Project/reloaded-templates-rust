@@ -24,7 +24,8 @@
 
 # Code Guidelines
 
-- Optimize for performance; use zero-cost abstractions, avoid allocations.
+- Optimize for performance; use zero-cost abstractions, avoid allocations. Use arrays instead of maps if size is known ahead of time.
+- Optimize for memory. Preallocate or trim if possible. Minimize memory use. Use smaller integers/types where appropriate. Use any other tricks that improve CPU or memory efficiency.
 - Keep modules under 500 lines (excluding tests); split if larger.
 - Place `use` inside functions only for `#[cfg]` conditional compilation.
 {%- if no-std-by-default or std-by-default %}
