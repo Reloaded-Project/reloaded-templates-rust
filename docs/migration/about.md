@@ -15,3 +15,4 @@ For information about migrating between template versions, see the following gui
 - **[v1.0.1](v1.0.1.md)** - Update AGENTS.md post-change verification commands
 - **[v1.1.0](v1.1.0.md)** - Script-based verification, auto-delete branches, lighter docs
 - **[v1.1.1](v1.1.1.md)** - Code guideline clarifications for performance and memory
+- **[v1.1.2](v1.1.2.md)** - Add publish dry-run verification with --allow-dirty
