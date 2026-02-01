@@ -5,22 +5,27 @@
 
 set -e
 
+run_cmd() {
+  echo "$*"
+  "$@"
+}
+
 echo "Building..."
-cargo build --workspace --all-features --all-targets --quiet
+run_cmd cargo build --workspace --all-features --all-targets --quiet
 
 echo "Testing..."
-cargo test --workspace --all-features --quiet
+run_cmd cargo test --workspace --all-features --quiet
 
 echo "Clippy..."
-cargo clippy --workspace --all-features --quiet -- -D warnings
+run_cmd cargo clippy --workspace --all-features --quiet -- -D warnings
 
 echo "Docs..."
-RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --document-private-items --quiet
+run_cmd RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --document-private-items --quiet
 
 echo "Formatting..."
-cargo fmt --all
+run_cmd cargo fmt --all --quiet
 
 echo "Publish dry-run..."
-cargo publish --dry-run --allow-dirty --quiet --workspace
+run_cmd cargo publish --dry-run --allow-dirty --quiet --workspace
 
 echo "All checks passed!"

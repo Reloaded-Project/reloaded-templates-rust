@@ -4,23 +4,38 @@
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-LoggedCommand {
+    param(
+        [string]$Command,
+        [string[]]$Arguments
+    )
+
+    if ($Arguments.Count -gt 0) {
+        Write-Host ($Command + " " + ($Arguments -join " "))
+    } else {
+        Write-Host $Command
+    }
+
+    & $Command @Arguments
+}
+
 Write-Host "Building..."
-cargo build --workspace --all-features --all-targets --quiet
+Invoke-LoggedCommand "cargo" @("build", "--workspace", "--all-features", "--all-targets", "--quiet")
 
 Write-Host "Testing..."
-cargo test --workspace --all-features --quiet
+Invoke-LoggedCommand "cargo" @("test", "--workspace", "--all-features", "--quiet")
 
 Write-Host "Clippy..."
-cargo clippy --workspace --all-features --quiet -- -D warnings
+Invoke-LoggedCommand "cargo" @("clippy", "--workspace", "--all-features", "--quiet", "--", "-D", "warnings")
 
 Write-Host "Docs..."
 $env:RUSTDOCFLAGS = "-D warnings"
-cargo doc --workspace --all-features --no-deps --document-private-items --quiet
+Invoke-LoggedCommand "cargo" @("doc", "--workspace", "--all-features", "--no-deps", "--document-private-items", "--quiet")
 
 Write-Host "Formatting..."
-cargo fmt --all
+Invoke-LoggedCommand "cargo" @("fmt", "--all", "--quiet")
 
 Write-Host "Publish dry-run..."
-cargo publish --dry-run --allow-dirty --quiet --workspace
+Invoke-LoggedCommand "cargo" @("publish", "--dry-run", "--allow-dirty", "--quiet", "--workspace")
 
 Write-Host "All checks passed!"
