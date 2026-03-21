@@ -2,10 +2,10 @@
 
 {{project_description}}
 
-# Project Structure
+# Layout
 
 - `{{project-name}}/` - Main library crate
-  - `src/` - Library source code
+  - `src/` - Source
 {%- if build_c_libs %}
   - `src/exports.rs` - C FFI exports
 {%- endif %}
@@ -13,33 +13,34 @@
   - `benches/` - Benchmarks
 {%- endif %}
 {%- if build_cli %}
-- `cli/` - CLI executable wrapper
+- `cli/` - CLI binary
 {%- endif %}
 {%- if fuzz %}
-- `fuzz/` - Fuzz testing targets
+- `fuzz/` - Fuzz targets
 {%- endif %}
 {%- if build_csharp_libs %}
 - `bindings/csharp/` - C# bindings
 {%- endif %}
 
-# Code Guidelines
+# Code
 
-- Optimize for performance; use zero-cost abstractions, avoid allocations. Use arrays instead of maps if size is known ahead of time.
-- Optimize for memory. Preallocate or trim if possible. Minimize memory use. Use smaller integers/types where appropriate. Use any other tricks that improve CPU or memory efficiency.
-- Keep modules under 500 lines (excluding tests); split if larger.
-- Place `use` inside functions only for `#[cfg]` conditional compilation.
+- Optimize for CPU and memory.
+- Use zero-cost abstractions, avoid allocations, prefer arrays when size is known.
+- Preallocate/trim memory, prefer smaller types when possible.
+- Keep modules under 500 lines (excluding tests and docs); split if larger.
+- Function-local `use` only for `#[cfg]`.
 {%- if no-std-by-default or std-by-default %}
-- Prefer `core` over `std` where possible (`core::mem` over `std::mem`).
+- Prefer `core` over `std` where possible (e.g. `core::mem`).
 {%- endif %}
 
-# Documentation Standards
+# Docs
 
 - Document public items with `///`
-- Add examples in docs where helpful
-- Use `//!` for module-level docs
-- Focus comments on "why" not "what"
-- Use [`TypeName`] rustdoc links, not backticks.
+- Add doc examples when helpful
+- Use `//!` for module docs
+- Comments explain "why", not "what"
+- Use [`TypeName`] links, not backticks.
 
-# Verification
+# Verify
 
-After code changes or for checks (testing/linting/building/docs/formatting), run `.cargo/verify.sh` (`.cargo/verify.ps1` on Windows). It echoes each command and runs the full suite, including core tests and any extra checks. Do this before returning to the user.
+If you changed code, run `.cargo/verify.sh` or `.cargo/verify.ps1` before returning. It runs the full build/test/lint/docs/format suite.

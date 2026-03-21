@@ -50,7 +50,7 @@ prompt = "Include VSCode Configurations & IDE Setup Guide"
 default = true
 
 [conditional.'vscode == false']
-ignore = ["src/.vscode", "doc/.vscode"]
+ignore = [".vscode", "src/.vscode", "doc/.vscode"]
 
 ## Cross Platform
 [placeholders.xplat]

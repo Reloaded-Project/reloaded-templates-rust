@@ -20,73 +20,29 @@ env:
 
 jobs:
   build-and-test:
+    name: {% raw %}${{ matrix.label }}{% endraw %}
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
+          # Linux
+          - { label: "Linux x64", os: ubuntu-latest, target: x86_64-unknown-linux-gnu, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
 {%- if xplat %}
-          - os: ubuntu-latest
-            target: i686-unknown-linux-gnu
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            {%- if build_with_pgo %}
-            use-pgo: false # no native runner
-            {%- endif %}
-            use-cross: true
-          - os: ubuntu-latest
-            target: armv7-unknown-linux-gnueabihf
-            {%- if build_with_pgo %}
-            use-pgo: false # no native runner
-            {%- endif %}
-            use-cross: true
+          - { label: "Linux x86", os: ubuntu-latest, target: i686-unknown-linux-gnu, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "Linux ARM64", os: ubuntu-latest, target: aarch64-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+          - { label: "Linux ARMv7", os: ubuntu-latest, target: armv7-unknown-linux-gnueabihf, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
 
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
-          - os: windows-latest
-            target: i686-pc-windows-msvc
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
+          # Windows
+          - { label: "Windows x64", os: windows-latest, target: x86_64-pc-windows-msvc, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "Windows x86", os: windows-latest, target: i686-pc-windows-msvc, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
 
-          - os: macos-15-intel # x86
-            target: x86_64-apple-darwin
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
-          - os: macos-latest # M1
-            target: aarch64-apple-darwin
-            {%- if build_with_pgo %}
-            use-pgo: true
-            {%- endif %}
-            use-cross: false
+          # macOS
+          - { label: "macOS Intel", os: macos-15-intel, target: x86_64-apple-darwin, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "macOS Apple Silicon", os: macos-latest, target: aarch64-apple-darwin, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
 {%- if big_endian %}
-          - os: ubuntu-latest
-            target: powerpc-unknown-linux-gnu
-            {%- if build_with_pgo %}
-            use-pgo: false # no native runner
-            {%- endif %}
-            use-cross: true
-          - os: ubuntu-latest
-            target: powerpc64-unknown-linux-gnu
-            {%- if build_with_pgo %}
-            use-pgo: false # no native runner
-            {%- endif %}
-            use-cross: true
+
+          # Big Endian
+          - { label: "Big Endian 32-bit", os: ubuntu-latest, target: powerpc-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+          - { label: "Big Endian 64-bit", os: ubuntu-latest, target: powerpc64-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
 {%- endif %}
 {%- endif %}
 
@@ -125,27 +81,12 @@ jobs:
           use-cross: {% raw %}${{ matrix.use-cross }}{% endraw %}
 
 {%- endif %}
-{%- if build_cli %}
-
-      - name: Build CLI Binary
-        uses: Reloaded-Project/devops-rust-lightweight-binary@v1
-        with:
-          target: {% raw %}${{ matrix.target }}{% endraw %}
-          use-pgo: {% raw %}${{ matrix.use-pgo && env.build-with-pgo }}{% endraw %}
-          use-cross: {% raw %}${{ matrix.use-cross }}{% endraw %}
-          build-library: false
-          run-tests-and-coverage: false
-          rust-project-path: src/cli
-          workspace-path: src
-          pgo-project-path: src/{{project-name}}
-          use-cache: false
-{%- endif %}
       # Note: The GitHub Runner Images will contain an up to date Rust Stable Toolchain
       #       thus as per recommendation of cargo-semver-checks, we're using stable here.
       #
       # Note to reader. If adding this to a new repo, please clear cache.
       - name: Run cargo-semver-checks
-        if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
+        if: (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')) && !matrix.use-cross
         working-directory: src
         shell: bash
         run: |
@@ -178,6 +119,54 @@ jobs:
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
         with:
           manifest-path: src/Cargo.toml
+
+{%- if build_cli %}
+
+  build-cli:
+    name: {% raw %}${{ matrix.label }}{% endraw %}
+    strategy:
+      matrix:
+        include:
+          # Linux
+          - { label: "CLI Linux x64", os: ubuntu-latest, target: x86_64-unknown-linux-gnu, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+{%- if xplat %}
+          - { label: "CLI Linux x86", os: ubuntu-latest, target: i686-unknown-linux-gnu, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "CLI Linux ARM64", os: ubuntu-latest, target: aarch64-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+          - { label: "CLI Linux ARMv7", os: ubuntu-latest, target: armv7-unknown-linux-gnueabihf, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+
+          # Windows
+          - { label: "CLI Windows x64", os: windows-latest, target: x86_64-pc-windows-msvc, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "CLI Windows x86", os: windows-latest, target: i686-pc-windows-msvc, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+
+          # macOS
+          - { label: "CLI macOS Intel", os: macos-15-intel, target: x86_64-apple-darwin, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+          - { label: "CLI macOS Apple Silicon", os: macos-latest, target: aarch64-apple-darwin, use-cross: false{%- if build_with_pgo %}, use-pgo: true{% endif %} }
+{%- if big_endian %}
+
+          # Big Endian
+          - { label: "CLI Big Endian 32-bit", os: ubuntu-latest, target: powerpc-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+          - { label: "CLI Big Endian 64-bit", os: ubuntu-latest, target: powerpc64-unknown-linux-gnu, use-cross: true{%- if build_with_pgo %}, use-pgo: false{% endif %} }
+{%- endif %}
+{%- endif %}
+
+    {% raw %}runs-on: ${{ matrix.os }}{% endraw %}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build CLI Binary
+        uses: Reloaded-Project/devops-rust-lightweight-binary@v1
+        with:
+          target: {% raw %}${{ matrix.target }}{% endraw %}
+          use-pgo: {% raw %}${{ matrix.use-pgo && env.build-with-pgo }}{% endraw %}
+          use-cross: {% raw %}${{ matrix.use-cross }}{% endraw %}
+          build-library: false
+          run-tests-and-coverage: false
+          rust-project-path: src/cli
+          workspace-path: src
+          pgo-project-path: src/{{project-name}}
+          use-cache: true
+{%- endif %}
 
 {%- if wine %}
   test-on-wine:
@@ -247,7 +236,7 @@ jobs:
     permissions:
       contents: write
 
-    needs: [build-and-test{%- if build_c_libs %},build-c-headers{%- endif %}{%- if build_csharp_libs %},build-dotnet-library{%- endif %}{%- if wine %},test-on-wine{%- endif %}]
+    needs: [build-and-test{%- if build_cli %},build-cli{%- endif %}{%- if build_c_libs %},build-c-headers{%- endif %}{%- if build_csharp_libs %},build-dotnet-library{%- endif %}{%- if wine %},test-on-wine{%- endif %}]
     # Publish only on tags
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest

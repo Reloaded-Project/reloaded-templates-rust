@@ -5,6 +5,13 @@
 
 set -e
 
+ORIGINAL_DIR="$(pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
+
+trap 'cd "$ORIGINAL_DIR"' EXIT
+
 run_cmd() {
   echo "$*"
   "$@"
@@ -20,7 +27,7 @@ echo "Clippy..."
 run_cmd cargo clippy --workspace --all-features --quiet -- -D warnings
 
 echo "Docs..."
-run_cmd RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --document-private-items --quiet
+run_cmd env RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --document-private-items --quiet
 
 echo "Formatting..."
 run_cmd cargo fmt --all --quiet

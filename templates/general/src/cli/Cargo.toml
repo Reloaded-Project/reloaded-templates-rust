@@ -6,6 +6,10 @@ description = "CLI for {{project_description}}"
 repository = "https://github.com/{{gh_username}}/{{project-name}}"
 license-file = "LICENSE"
 readme = "README.MD"
+# keywords (search terms): https://crates.io/keywords
+# keywords = ["cli", "command-line", "terminal"]
+# categories (fixed list): https://crates.io/categories
+# categories = ["command-line-utilities"]
 
 [dependencies]
 {{project-name}} = { path = "../{{project-name}}" }

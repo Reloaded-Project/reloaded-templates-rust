@@ -4,6 +4,18 @@
 
 $ErrorActionPreference = "Stop"
 
+$originalDir = Get-Location
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$projectRoot = Join-Path $scriptDir ".."
+$originalRustdocFlags = $env:RUSTDOCFLAGS
+Set-Location $projectRoot
+
+trap {
+    $env:RUSTDOCFLAGS = $originalRustdocFlags
+    Set-Location $originalDir
+    throw
+}
+
 function Invoke-LoggedCommand {
     param(
         [string]$Command,
@@ -39,3 +51,6 @@ Write-Host "Publish dry-run..."
 Invoke-LoggedCommand "cargo" @("publish", "--dry-run", "--allow-dirty", "--quiet", "--workspace")
 
 Write-Host "All checks passed!"
+
+$env:RUSTDOCFLAGS = $originalRustdocFlags
+Set-Location $originalDir
