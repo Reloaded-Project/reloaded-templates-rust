@@ -16,3 +16,4 @@ For information about migrating between template versions, see the following gui
 - **[v1.1.0](v1.1.0.md)** - Script-based verification, auto-delete branches, lighter docs
 - **[v1.1.1](v1.1.1.md)** - Code guideline clarifications for performance and memory
 - **[v1.1.2](v1.1.2.md)** - Add publish dry-run verification with --allow-dirty
+- **[v1.1.3](v1.1.3.md)** - Fix verification scripts, disable YAML format-on-save, split CLI builds

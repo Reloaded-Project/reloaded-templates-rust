@@ -7,6 +7,10 @@ repository = "https://github.com/{{gh_username}}/{{project-name}}"
 license-file = "LICENSE"
 include = ["src/**/*"]
 readme = "README.MD"
+# keywords (search terms): https://crates.io/keywords
+# keywords = ["api", "parser"]
+# categories (fixed list): https://crates.io/categories
+# categories = ["development-tools"]
 
 [features]
 {% if std-by-default -%}

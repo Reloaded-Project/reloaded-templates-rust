@@ -16,6 +16,23 @@ To setup code coverage for this project:
 
 The instructions on the Codecov page will provide the token to use.
 
+### Set crates.io Metadata
+
+Before publishing, add `keywords` and `categories` to:
+
+- `src/{{project-name}}/Cargo.toml`
+{%- if build_cli %}
+- `src/cli/Cargo.toml`
+{%- endif %}
+
+`keywords` are search tags. `categories` are fixed crates.io sections.
+Commented placeholders are already in the crate `Cargo.toml` files.
+
+- Browse keywords: [crates.io keywords][crates-io-keywords]
+- Browse categories: [crates.io categories][crates-io-categories]
+- Popular keywords: `cli`, `async`, `api`, `parser`, `web`
+- Popular categories: `command-line-utilities`, `development-tools`, `no-std`, `web-programming`, `api-bindings`
+
 {% if mkdocs -%}
 ### Setup Documentation
 
@@ -111,6 +128,8 @@ Licensed under [{{license}}](./LICENSE).
 [gh-actions-dependabot]: https://github.com/{{gh_username}}/{{project-name}}/settings/secrets/dependabot
 [gh-pages]: https://github.com/{{gh_username}}/{{project-name}}/settings/pages
 [crates-io-key]: https://crates.io/settings/tokens
+[crates-io-keywords]: https://crates.io/keywords
+[crates-io-categories]: https://crates.io/categories
 [nuget-key]: https://www.nuget.org/account/apikeys
 {%- if mkdocs %}
 [docs]: https://{{gh_reponame}}.github.io/{{gh_reponame}} {%- endif %}
