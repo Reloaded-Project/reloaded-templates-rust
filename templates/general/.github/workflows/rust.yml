@@ -19,6 +19,28 @@ env:
 {%- endif %}
 
 jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run formatter check
+        if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
+        uses: actions-rust-lang/rustfmt@v1
+        with:
+          manifest-path: src/Cargo.toml
+
+  semver-checks:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Run semver check
+        uses: Reloaded-Project/devops-cargo-semver-checks-action@v1
+        with:
+          manifest-path: src/Cargo.toml
+          feature-group: all-features
+          rust-toolchain: stable
+          rust-target: x86_64-unknown-linux-gnu
+
   build-and-test:
     name: {% raw %}${{ matrix.label }}{% endraw %}
     strategy:
@@ -81,27 +103,6 @@ jobs:
           use-cross: {% raw %}${{ matrix.use-cross }}{% endraw %}
 
 {%- endif %}
-      # Note: The GitHub Runner Images will contain an up to date Rust Stable Toolchain
-      #       thus as per recommendation of cargo-semver-checks, we're using stable here.
-      #
-      # Note to reader. If adding this to a new repo, please clear cache.
-      - name: Run cargo-semver-checks
-        if: (github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')) && !matrix.use-cross
-        working-directory: src
-        shell: bash
-        run: |
-          SEARCH_RESULT=$(cargo search "^{{project-name}}$" --limit 1)
-
-          if echo "$SEARCH_RESULT" | grep -q "^{{project-name}} "; then
-              # Run semver checks on stable, because nightly sometimes gets borked in cargo-semver-checks.
-              rustup +stable target add {% raw %}${{ matrix.target }}{% endraw %}
-              # Note: binstall is available after devops-rust-test-and-coverage@v1 call
-              cargo +stable binstall --no-confirm cargo-semver-checks --force
-              cargo +stable semver-checks --target {% raw %}${{ matrix.target }}{% endraw %} {% if build_c_libs %}--features c-exports{% endif %}
-          else
-              echo "No previous version found on crates.io. Skipping semver checks."
-          fi
-
       - name: Check documentation is valid
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
         working-directory: src
@@ -113,12 +114,6 @@ jobs:
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
         working-directory: src
         run: cargo clippy --workspace --all-features --target {% raw %}${{ matrix.target }}{% endraw %} -- -D warnings
-
-      - name: Run formatter check
-        uses: actions-rust-lang/rustfmt@v1
-        if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
-        with:
-          manifest-path: src/Cargo.toml
 
 {%- if build_cli %}
 
@@ -236,7 +231,7 @@ jobs:
     permissions:
       contents: write
 
-    needs: [build-and-test{%- if build_cli %},build-cli{%- endif %}{%- if build_c_libs %},build-c-headers{%- endif %}{%- if build_csharp_libs %},build-dotnet-library{%- endif %}{%- if wine %},test-on-wine{%- endif %}]
+    needs: [format-check,semver-checks,build-and-test{%- if build_cli %},build-cli{%- endif %}{%- if build_c_libs %},build-c-headers{%- endif %}{%- if build_csharp_libs %},build-dotnet-library{%- endif %}{%- if wine %},test-on-wine{%- endif %}]
     # Publish only on tags
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
