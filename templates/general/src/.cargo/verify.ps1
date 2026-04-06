@@ -1,6 +1,7 @@
 # Post-change verification script
 # All steps must pass without warnings
 # Keep in sync with verify.sh
+# Script is relative to git repo root; search if not found
 
 $originalDir = Get-Location
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
