@@ -18,3 +18,4 @@ For information about migrating between template versions, see the following gui
 - **[v1.1.2](v1.1.2.md)** - Add publish dry-run verification with --allow-dirty
 - **[v1.1.3](v1.1.3.md)** - Fix verification scripts, disable YAML format-on-save, split CLI builds
 - **[v1.1.4](v1.1.4.md)** - Simplified AGENTS.md structure, separated formatter CI job, review guidance files
+- **[v1.1.5](v1.1.5.md)** - Remove conditional from documentation check for rustdoc cache effectiveness
