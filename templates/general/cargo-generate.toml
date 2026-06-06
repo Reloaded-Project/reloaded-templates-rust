@@ -8,10 +8,10 @@ ignore = [
 exclude = [
     ".github/workflows/auto-changelog.yml",
     ".github/workflows/deploy-mkdocs.yml",
-    "doc/docs/vendor/Reloaded/Images/Nexus-Heart-40.avif",
-    "doc/docs/vendor/Reloaded/Images/Nexus-Icon-40.avif",
-    "doc/docs/vendor/Reloaded/Images/Reloaded-Heart-40.avif",
-    "doc/docs/vendor/Reloaded/Images/Reloaded-Icon-40.avif",
+    "src/doc/docs/vendor/Reloaded/Images/Nexus-Heart-40.avif",
+    "src/doc/docs/vendor/Reloaded/Images/Nexus-Icon-40.avif",
+    "src/doc/docs/vendor/Reloaded/Images/Reloaded-Heart-40.avif",
+    "src/doc/docs/vendor/Reloaded/Images/Reloaded-Icon-40.avif",
     "src/bindings/csharp/nuget-icon.png",
 ]
 
@@ -41,7 +41,7 @@ prompt = "Include external documentation (mkdocs)"
 default = true
 
 [conditional.'mkdocs == false']
-ignore = ["mkdocs.yml", "doc", ".github/workflows/deploy-mkdocs.yml"]
+ignore = ["mkdocs.yml", "src/doc", ".github/workflows/deploy-mkdocs.yml"]
 
 ## VSCode Integration
 [placeholders.vscode]
@@ -50,7 +50,7 @@ prompt = "Include VSCode Configurations & IDE Setup Guide"
 default = true
 
 [conditional.'vscode == false']
-ignore = [".vscode", "src/.vscode", "doc/.vscode"]
+ignore = [".vscode", "src/.vscode", "src/doc/.vscode"]
 
 ## Cross Platform
 [placeholders.xplat]

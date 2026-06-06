@@ -5,13 +5,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "doc/mkdocs.yml"
-      - "doc/docs/**"
-  pull_request:
-    branches: [main]
-    paths:
-      - "doc/mkdocs.yml"
-      - "doc/docs/**"
+      - "src/doc/mkdocs.yml"
+      - "src/doc/docs/**"
+    pull_request:
+      branches: [main]
+      paths:
+      - "src/doc/mkdocs.yml"
+      - "src/doc/docs/**"
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
       - name: Deploy MkDocs
         uses: Reloaded-Project/devops-mkdocs@v1
         with:
-          requirements: ./doc/docs/requirements.txt
+          requirements: ./src/doc/docs/requirements.txt
           publish-to-pages: ${{ github.event_name == 'push' }}
           checkout-current-repo: true
-          config-file: ./doc/mkdocs.yml
+          config-file: ./src/doc/mkdocs.yml
