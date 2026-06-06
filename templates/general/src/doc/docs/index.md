@@ -5,7 +5,7 @@ hide:
 
 <div align="center">
 	<h1>The Reloaded MkDocs Theme</h1>
-	<img src="Reloaded/Images/Reloaded-Icon.png" width="150" align="center" />
+	<img src="vendor/Reloaded/Images/Reloaded-Icon-40.avif" width="150" align="center" />
 	<br/> <br/>
     A Theme for MkDocs Material.
     <br/>
