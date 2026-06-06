@@ -127,7 +127,7 @@ def install_dependencies(venv_dir: Path, script_dir: Path, verbose: bool = False
         
         # Install from template documentation requirements
         print_info("Installing template documentation dependencies...")
-        template_docs_requirements = script_dir.parent.parent / "templates" / "general" / "doc" / "docs" / "requirements.txt"
+        template_docs_requirements = script_dir.parent.parent / "templates" / "general" / "src" / "doc" / "docs" / "requirements.txt"
         if template_docs_requirements.exists():
             run_command([str(pip_exe), "install", "-r", str(template_docs_requirements)], verbose=verbose)
         else:

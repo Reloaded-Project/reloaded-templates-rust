@@ -83,12 +83,12 @@ class TemplateValidator:
         logger.info("Validating file structure...")
         errors = 0
 
-        # MkDocs validation (FIX: only check doc/mkdocs.yml, NOT root mkdocs.yml)
+        # MkDocs validation (FIX: only check src/doc/mkdocs.yml, NOT root mkdocs.yml)
         if self.config.mkdocs:
-            errors += self._check_exists("doc/mkdocs.yml", "Doc mkdocs.yml")
-            errors += self._check_exists("doc/docs", "MkDocs source directory")
+            errors += self._check_exists("src/doc/mkdocs.yml", "Doc mkdocs.yml")
+            errors += self._check_exists("src/doc/docs", "MkDocs source directory")
         else:
-            errors += self._check_not_exists("doc", "Documentation directory")
+            errors += self._check_not_exists("src/doc", "Documentation directory")
             errors += self._check_not_exists(
                 ".github/workflows/deploy-mkdocs.yml", "MkDocs deployment workflow"
             )
@@ -99,12 +99,12 @@ class TemplateValidator:
             errors += self._check_exists("src/.vscode/tasks.json", "VSCode tasks")
             if self.config.mkdocs:
                 errors += self._check_exists(
-                    "doc/.vscode/settings.json", "Doc VSCode settings"
+                    "src/doc/.vscode/settings.json", "Doc VSCode settings"
                 )
         else:
             errors += self._check_not_exists("src/.vscode", "VSCode directory")
             if self.config.mkdocs:
-                errors += self._check_not_exists("doc/.vscode", "Doc VSCode directory")
+                errors += self._check_not_exists("src/doc/.vscode", "Doc VSCode directory")
 
         # C library validation
         if self.config.build_c_libs:
@@ -663,9 +663,9 @@ class TemplateValidator:
 
         logger.info("Validating MkDocs build...")
 
-        doc_dir = self.project_path / "doc"
+        doc_dir = self.project_path / "src/doc"
         if not doc_dir.exists():
-            logger.error("✗ doc/ directory not found")
+            logger.error("✗ src/doc/ directory not found")
             return False
 
         # Run mkdocs build --strict
