@@ -125,7 +125,6 @@ rustup +nightly component add miri
 Run Miri on your tests:
 
 ```bash
-cd src
 cargo +nightly miri test
 ```
 
@@ -141,7 +140,6 @@ Computers store numbers in memory differently:
 To test with big-endian emulation via command line:
 
 ```bash
-cd src
 cargo +nightly miri test --target powerpc64-unknown-linux-gnu
 ```
 
@@ -162,14 +160,12 @@ rustup +nightly component add miri
 **Run Miri on your tests:**
 
 ```bash
-cd src
 cargo +nightly miri test
 ```
 
 **Test with big-endian emulation:**
 
 ```bash
-cd src
 cargo +nightly miri test --target powerpc64-unknown-linux-gnu
 ```
 

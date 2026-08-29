@@ -4,7 +4,7 @@
     {
       "label": "Auto Test on Save",
       "type": "shell",
-      "command": "cargo install cargo-watch --quiet && cargo watch -x \"test\" -w {{project-name}}/src",
+      "command": "cargo install cargo-watch --quiet && cargo watch -x \"test\" -w src/{{project-name}}/src",
       "group": "test",
       "presentation": {
         "reveal": "always"
@@ -14,7 +14,7 @@
     {
       "label": "Auto Coverage on Save",
       "type": "shell",
-      "command": "cargo install cargo-watch --quiet && cargo install cargo-tarpaulin --quiet && cargo watch -x \"tarpaulin --skip-clean --out Xml --out Html --engine llvm --target-dir target/coverage-build\" -w {{project-name}}/src",
+      "command": "cargo install cargo-watch --quiet && cargo install cargo-tarpaulin --quiet && cargo watch -x \"tarpaulin --skip-clean --out Xml --out Html --engine llvm --target-dir target/coverage-build\" -w src/{{project-name}}/src",
       "group": "test",
       "presentation": {
         "reveal": "always"
@@ -36,7 +36,7 @@
     {
       "label": "Generate C Bindings",
       "type": "shell",
-      "command": "cargo install cbindgen --quiet && cbindgen --config ../.github/cbindgen_c.toml --output bindings/c/{{project-name}}.h {{project-name}}",
+      "command": "cargo install cbindgen --quiet && cbindgen --config .github/cbindgen_c.toml --output src/bindings/c/{{project-name}}.h src/{{project-name}}",
       "group": "build",
       "presentation": {
         "reveal": "always"
@@ -46,7 +46,7 @@
     {
       "label": "Generate C++ Bindings",
       "type": "shell",
-      "command": "cargo install cbindgen --quiet && cbindgen --config ../.github/cbindgen_cpp.toml --output bindings/cpp/{{project-name}}.hpp {{project-name}}",
+      "command": "cargo install cbindgen --quiet && cbindgen --config .github/cbindgen_cpp.toml --output src/bindings/cpp/{{project-name}}.hpp src/{{project-name}}",
       "group": "build",
       "presentation": {
         "reveal": "always"
@@ -84,7 +84,7 @@
     {
       "label": "List Fuzz Targets",
       "type": "shell",
-      "command": "cargo install cargo-fuzz --quiet && cargo +nightly fuzz list",
+      "command": "cargo install cargo-fuzz --quiet && cd src && cargo +nightly fuzz list",
       "group": "test",
       "presentation": {
         "reveal": "always"

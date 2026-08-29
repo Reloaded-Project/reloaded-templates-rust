@@ -84,7 +84,7 @@ Once you generate a template, further instructions might await in your project's
 
 !!! info "Code Editor Setup"
 
-    After generating a project, open the `src` folder in your code editor for development.
+    After generating a project, open the project root in your code editor for development.
 
     Visit the manual generated in your project's README for editor setup details.
 

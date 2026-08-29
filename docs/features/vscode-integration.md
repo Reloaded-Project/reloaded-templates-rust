@@ -20,9 +20,9 @@ Install the recommended VSCode extensions:
 
 The Reloaded template is designed to work with separate VSCode workspaces for different purposes:
 
-### Source Code Development (`src`)
+### Source Code Development (Project Root)
 
-Open the `src` folder in VSCode when doing Rust development work. This folder contains your `Cargo.toml`, source code, and tests. When opened as your workspace root, VSCode features work automatically:
+Open the project root in VSCode when doing Rust development work. The workspace `Cargo.toml` at the project root covers all crates under `src/`. When opened as your workspace root, VSCode features work automatically:
 
 - CodeLLDB debug profiles generate automatically
 - Ctrl+Shift+B build task runs without configuration
@@ -34,10 +34,10 @@ Open the `src` folder in VSCode when doing Rust development work. This folder co
 Open the `doc` folder in VSCode when editing documentation. This folder contains your MkDocs project and markdown files. The doc workspace uses different VSCode settings optimized for documentation work.
 
 !!! info
-    VSCode features like CodeLLDB debug profiles and the default build task (Ctrl+Shift+B) require the workspace root to be your Rust project root-where `Cargo.toml` is located. Open `src` for development and `doc` for documentation to ensure each tool works correctly.
+    VSCode features like CodeLLDB debug profiles and the default build task (Ctrl+Shift+B) require the workspace root to be where `Cargo.toml` is located- the project root. Open the project root for development and `doc` for documentation to ensure each tool works correctly.
 
 ## Debugging
-Install the `CodeLLDB` extension for native debugging support. Debug profiles are automatically created when the extension is installed and the `src` folder is opened as your workspace root.
+Install the `CodeLLDB` extension for native debugging support. Debug profiles are automatically created when the extension is installed and the project root is opened as your workspace root.
 
 ![VSCode Debugging](../assets/vscode-debug.avif)
 /// caption

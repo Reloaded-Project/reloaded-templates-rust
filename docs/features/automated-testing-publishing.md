@@ -102,7 +102,7 @@ Update your `.vscode/tasks.json` to include the exclusion flags:
 }
 ```
 
-The task automatically runs in the `src/` directory, so you don't need to manually navigate when using VSCode tasks.
+The task automatically runs in the project root, so you don't need to manually navigate when using VSCode tasks.
 
 ### Semantic Version Checks
 Automatically checks if your changes might break code for people who use your library. If you make changes that could break other people's code, you'll need to update your version number. This prevents accidental breaking changes from reaching your users.

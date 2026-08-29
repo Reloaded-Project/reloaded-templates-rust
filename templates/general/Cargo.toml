@@ -3,7 +3,7 @@
 {% endif %}
 [workspace]
 resolver = "2"
-members = ["{{project-name}}"{% if build_cli %}, "cli"{% endif %}]
+members = ["src/{{project-name}}"{% if build_cli %}, "src/cli"{% endif %}]
 
 # Profile Build
 [profile.profile]

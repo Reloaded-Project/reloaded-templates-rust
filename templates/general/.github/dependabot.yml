@@ -2,7 +2,7 @@ version: 2
 updates:
   # Enable version updates for Cargo
   - package-ecosystem: "cargo"
-    directory: "src"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
