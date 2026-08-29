@@ -141,7 +141,7 @@ cargo install cargo-fuzz
 **Initialize fuzzing in your project:**
 
 ```bash
-cd src  # or your project root
+cd src  # fuzz/ is created in the current directory
 cargo fuzz init
 ```
 
