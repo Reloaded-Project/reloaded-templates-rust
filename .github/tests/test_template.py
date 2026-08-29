@@ -83,28 +83,28 @@ class TemplateValidator:
         logger.info("Validating file structure...")
         errors = 0
 
-        # MkDocs validation (FIX: only check src/doc/mkdocs.yml, NOT root mkdocs.yml)
+        # MkDocs validation (FIX: only check doc/mkdocs.yml, NOT root mkdocs.yml)
         if self.config.mkdocs:
-            errors += self._check_exists("src/doc/mkdocs.yml", "Doc mkdocs.yml")
-            errors += self._check_exists("src/doc/docs", "MkDocs source directory")
+            errors += self._check_exists("doc/mkdocs.yml", "Doc mkdocs.yml")
+            errors += self._check_exists("doc/docs", "MkDocs source directory")
         else:
-            errors += self._check_not_exists("src/doc", "Documentation directory")
+            errors += self._check_not_exists("doc", "Documentation directory")
             errors += self._check_not_exists(
                 ".github/workflows/deploy-mkdocs.yml", "MkDocs deployment workflow"
             )
 
         # VSCode validation
         if self.config.vscode:
-            errors += self._check_exists("src/.vscode/settings.json", "VSCode settings")
-            errors += self._check_exists("src/.vscode/tasks.json", "VSCode tasks")
+            errors += self._check_exists(".vscode/settings.json", "VSCode settings")
+            errors += self._check_exists(".vscode/tasks.json", "VSCode tasks")
             if self.config.mkdocs:
                 errors += self._check_exists(
-                    "src/doc/.vscode/settings.json", "Doc VSCode settings"
+                    "doc/.vscode/settings.json", "Doc VSCode settings"
                 )
         else:
-            errors += self._check_not_exists("src/.vscode", "VSCode directory")
+            errors += self._check_not_exists(".vscode", "VSCode directory")
             if self.config.mkdocs:
-                errors += self._check_not_exists("src/doc/.vscode", "Doc VSCode directory")
+                errors += self._check_not_exists("doc/.vscode", "Doc VSCode directory")
 
         # C library validation
         if self.config.build_c_libs:
@@ -187,7 +187,11 @@ class TemplateValidator:
         errors += self._validate_license_cleanup()
 
         # Essential files validation
-        errors += self._check_exists("src/Cargo.toml", "Workspace Cargo.toml")
+        errors += self._check_exists("Cargo.toml", "Workspace Cargo.toml")
+
+        # The pre-v1.3.0 layout must be fully vacated after the workspace-root move
+        for legacy in ("src/Cargo.toml", "src/.cargo", "src/.vscode", "src/doc"):
+            errors += self._check_not_exists(legacy, f"Legacy layout {legacy}")
         errors += self._check_exists(
             f"src/{self.config.project_name}/Cargo.toml", "Package Cargo.toml"
         )
@@ -352,7 +356,7 @@ class TemplateValidator:
         if not self.config.vscode:
             return 0
 
-        tasks_file = self.project_path / "src/.vscode/tasks.json"
+        tasks_file = self.project_path / ".vscode/tasks.json"
         if not tasks_file.exists():
             logger.error("✗ VSCode tasks.json not found for fuzz task validation")
             return 1
@@ -371,6 +375,13 @@ class TemplateValidator:
             # Check that "List Fuzz Targets" task IS present
             if '"label": "List Fuzz Targets"' not in content:
                 logger.error("✗ tasks.json missing 'List Fuzz Targets' task")
+                errors += 1
+
+            # cargo fuzz needs the folder containing fuzz/, which stays under src/
+            if "cd src && cargo +nightly fuzz list" not in content:
+                logger.error(
+                    "✗ 'List Fuzz Targets' must run from src/ (cargo fuzz needs the folder containing fuzz/)"
+                )
                 errors += 1
 
             if errors == 0:
@@ -489,16 +500,16 @@ class TemplateValidator:
         """Run cargo check, build, and test."""
         logger.info("Validating Rust builds...")
 
-        src_dir = self.project_path / "src"
-        if not src_dir.exists():
-            logger.error("✗ src/ directory not found")
+        project_dir = self.project_path
+        if not (project_dir / "Cargo.toml").exists():
+            logger.error("✗ Workspace Cargo.toml not found")
             return False
 
         # Run cargo check
         logger.info("Running cargo check...")
         result = subprocess.run(
             ["cargo", "check"],
-            cwd=src_dir,
+            cwd=project_dir,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -514,7 +525,7 @@ class TemplateValidator:
         logger.info("Running cargo build...")
         result = subprocess.run(
             ["cargo", "build"],
-            cwd=src_dir,
+            cwd=project_dir,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -530,7 +541,7 @@ class TemplateValidator:
         logger.info("Running cargo test...")
         result = subprocess.run(
             ["cargo", "test"],
-            cwd=src_dir,
+            cwd=project_dir,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -545,7 +556,7 @@ class TemplateValidator:
         return True
 
     def validate_v1_1_4_template_updates(self) -> bool:
-        """Validate v1.1.4 template changes: format-check job, simplified AGENTS.md, guidance files, verify headers."""
+        """Validate v1.1.4 template changes (format-check job, AGENTS.md, guidance files, verify headers) and v1.3.0 workspace-root workflow paths."""
         logger.info("Validating v1.1.4 template updates...")
         errors = 0
 
@@ -583,31 +594,39 @@ class TemplateValidator:
                 if not found_publish_needs:
                     logger.error("✗ publish-crate needs does not include format-check")
                     errors += 1
+
+            # The workspace manifest lives at the project root since v1.3.0
+            if "manifest-path: Cargo.toml" not in workflow_text:
+                logger.error(
+                    "✗ rust.yml manifest-path does not point at root Cargo.toml"
+                )
+                errors += 1
+            for stale in ("manifest-path: src/Cargo.toml", "workspace-path: src"):
+                if stale in workflow_text:
+                    logger.error(f"✗ rust.yml contains stale workspace path: {stale}")
+                    errors += 1
         else:
             logger.error("✗ Workflow file not found")
             errors += 1
 
-            agents_path = self.project_path / "src" / "AGENTS.md"
-            if agents_path.exists():
-                agents_text = agents_path.read_text().strip()
-                expected_lines = [
-                    "After changes, run `.cargo/verify.{sh,ps1}` before returning.",
-                    "If relevant to your review task, read `.cargo/{general,performance,documentation}.md`.",
-                ]
-                actual_lines = agents_text.splitlines()
-                if actual_lines != expected_lines:
-                    logger.error(
-                        f"✗ src/AGENTS.md content mismatch. Got {len(actual_lines)} lines: {actual_lines}"
-                    )
+        agents_path = self.project_path / "src" / "AGENTS.md"
+        if agents_path.exists():
+            agents_text = agents_path.read_text()
+            for line in (
+                "After changes, run `.llm/verify.{sh,ps1}` before returning.",
+                "If relevant to your review task, read `.llm/{general,performance,documentation}.md`.",
+            ):
+                if line not in agents_text:
+                    logger.error(f"✗ src/AGENTS.md missing guidance line: {line}")
                     errors += 1
-            else:
-                logger.error("✗ src/AGENTS.md not found")
-                errors += 1
+        else:
+            logger.error("✗ src/AGENTS.md not found")
+            errors += 1
 
         guidance_files = [
-            ("src/.cargo/general.md", "# General Rules"),
-            ("src/.cargo/performance.md", "# Performance Rules"),
-            ("src/.cargo/documentation.md", "# Documentation Rules"),
+            ("src/.llm/general.md", "# General Rules"),
+            ("src/.llm/performance.md", "# Performance Rules"),
+            ("src/.llm/documentation.md", "# Documentation Rules"),
         ]
         for rel_path, heading in guidance_files:
             file_path = self.project_path / rel_path
@@ -625,14 +644,14 @@ class TemplateValidator:
         gitignore_path = self.project_path / ".gitignore"
         if gitignore_path.exists():
             gitignore_text = gitignore_path.read_text()
-            if "src/.vscode/local-reviews/" not in gitignore_text:
+            if ".vscode/local-reviews/" not in gitignore_text:
                 logger.error("✗ .gitignore missing local-reviews path")
                 errors += 1
         else:
             logger.error("✗ .gitignore not found")
             errors += 1
 
-        for verify_rel in ["src/.cargo/verify.sh", "src/.cargo/verify.ps1"]:
+        for verify_rel in ["src/.llm/verify.sh", "src/.llm/verify.ps1"]:
             verify_path = self.project_path / verify_rel
             if verify_path.exists():
                 verify_text = verify_path.read_text()
@@ -663,9 +682,9 @@ class TemplateValidator:
 
         logger.info("Validating MkDocs build...")
 
-        doc_dir = self.project_path / "src/doc"
+        doc_dir = self.project_path / "doc"
         if not doc_dir.exists():
-            logger.error("✗ src/doc/ directory not found")
+            logger.error("✗ doc/ directory not found")
             return False
 
         # Run mkdocs build --strict

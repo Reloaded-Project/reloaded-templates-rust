@@ -427,16 +427,14 @@ Using VSCode, press `Ctrl+Shift+P` → "Run Task" → Select one of:
 Or from command line:
 
 ```bash
-cd src
-
 # Install cbindgen (one-time setup)
 cargo install cbindgen
 
 # Generate C bindings
-cbindgen --config ../.github/cbindgen_c.toml --output bindings/c/your-project.h your-project
+cbindgen --config .github/cbindgen_c.toml --output src/bindings/c/your-project.h src/your-project
 
 # Generate C++ bindings
-cbindgen --config ../.github/cbindgen_cpp.toml --output bindings/cpp/your-project.hpp your-project
+cbindgen --config .github/cbindgen_cpp.toml --output src/bindings/cpp/your-project.hpp src/your-project
 ```
 
 Replace `your-project` with your actual project name. Configuration files are located in `.github/`:
@@ -454,7 +452,6 @@ When you push a release tag, headers are generated with `cbindgen`, and attached
 **Generate headers locally:**
 
 ```bash
-cd src
 cargo build --features c-exports  # Generate C/C++ headers
 ```
 

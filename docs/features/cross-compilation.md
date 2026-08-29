@@ -35,8 +35,6 @@ cargo install cross --git https://github.com/cross-rs/cross
 Simply replace `cargo` with `cross`:
 
 ```bash
-cd src
-
 cross build --target x86_64-pc-windows-gnu
 # Windows on Linux or macOS
 cross test --target x86_64-pc-windows-gnu --release
@@ -66,8 +64,6 @@ You can use either:
 `cross` can be used to test with Wine.
 
 ```bash
-cd src
-
 # Test Windows binaries on Linux using cross
 cross test --target x86_64-pc-windows-gnu --release
 cross test --target i686-pc-windows-gnu --release
@@ -91,7 +87,6 @@ The tests will run in your local WINE installation.
     rustup target add x86_64-pc-windows-gnu
 
     # Test Windows binaries on Linux using cargo
-    cd src
     cargo test --target x86_64-pc-windows-gnu --release
     ```
 
@@ -138,7 +133,6 @@ The tests will run in your local WINE installation.
 
     ```bash
     nix develop
-    cd src
     cargo test --target x86_64-pc-windows-gnu --release
     ```
 

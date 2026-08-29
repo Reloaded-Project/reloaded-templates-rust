@@ -20,9 +20,9 @@ Install the recommended VSCode extensions:
 
 The Reloaded template is designed to work with separate VSCode workspaces for different purposes:
 
-### Source Code Development (`src`)
+### Source Code Development
 
-Open the `src` folder in VSCode when doing Rust development work. This folder contains your `Cargo.toml`, source code, and tests. When opened as your workspace root, VSCode features work automatically:
+Open the repo in VSCode for Rust development. The workspace `Cargo.toml` covers all crates under `src/`, so VSCode features work automatically:
 
 - CodeLLDB debug profiles generate automatically
 - Ctrl+Shift+B build task runs without configuration
@@ -31,13 +31,13 @@ Open the `src` folder in VSCode when doing Rust development work. This folder co
 
 ### Documentation Editing (`doc`)
 
-Open the `doc` folder in VSCode when editing documentation. This folder contains your MkDocs project and markdown files. The doc workspace uses different VSCode settings optimized for documentation work.
+Open `doc` in VSCode when editing documentation. It contains the MkDocs project and markdown files, with VSCode settings optimized for documentation work.
 
 !!! info
-    VSCode features like CodeLLDB debug profiles and the default build task (Ctrl+Shift+B) require the workspace root to be your Rust project root-where `Cargo.toml` is located. Open `src` for development and `doc` for documentation to ensure each tool works correctly.
+    Features like CodeLLDB debug profiles and the default build task (Ctrl+Shift+B) need `Cargo.toml` at the workspace root. Use the main workspace for development and `doc` for documentation so each tool works correctly.
 
 ## Debugging
-Install the `CodeLLDB` extension for native debugging support. Debug profiles are automatically created when the extension is installed and the `src` folder is opened as your workspace root.
+Install the `CodeLLDB` extension for native debugging support. Debug profiles are automatically created when the extension is installed and the workspace is opened.
 
 ![VSCode Debugging](../assets/vscode-debug.avif)
 /// caption
@@ -109,6 +109,6 @@ Copy the template configuration files to your project and install the recommende
 - [templates/general/.vscode/settings.json](https://github.com/Reloaded-Project/reloaded-templates-rust/blob/main/templates/general/.vscode/settings.json) - VSCode settings with `rust-analyzer` and coverage configuration
 - [templates/general/.vscode/tasks.json](https://github.com/Reloaded-Project/reloaded-templates-rust/blob/main/templates/general/.vscode/tasks.json) - Pre-configured development tasks
 
-Create a `.vscode` directory in your Rust project root (where `Cargo.toml` is located) and copy these files. Then open your project's folder in VSCode to enable full functionality.
+Create a `.vscode` directory next to your `Cargo.toml` and copy these files. Then open the project in VSCode to enable full functionality.
 
 See the [main documentation](../index.md#getting-started) for more details.

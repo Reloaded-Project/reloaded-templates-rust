@@ -7,10 +7,14 @@ on:
       - "*"
     paths:
       - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
   pull_request:
     branches: [main]
     paths:
       - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
   workflow_dispatch:
 
 {% if build_with_pgo %}
@@ -27,7 +31,7 @@ jobs:
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
         uses: actions-rust-lang/rustfmt@v1
         with:
-          manifest-path: src/Cargo.toml
+          manifest-path: Cargo.toml
 
   semver-checks:
     runs-on: ubuntu-latest
@@ -36,7 +40,7 @@ jobs:
       - name: Run semver check
         uses: Reloaded-Project/devops-cargo-semver-checks-action@v1
         with:
-          manifest-path: src/Cargo.toml
+          manifest-path: Cargo.toml
           feature-group: all-features
           rust-toolchain: stable
           rust-target: x86_64-unknown-linux-gnu
@@ -88,7 +92,7 @@ jobs:
           run-tests-and-coverage: true
           codecov-token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
           rust-project-path: src/{{project-name}}
-          workspace-path: src
+          workspace-path: .
           pgo-project-path: src/{{project-name}}
 
 {%- else %}
@@ -96,7 +100,7 @@ jobs:
       - name: Run Tests and Upload Coverage
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1
         with:
-          rust-project-path: ./src
+          rust-project-path: ./
           upload-coverage: true
           codecov-token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
           target: {% raw %}${{ matrix.target }}{% endraw %}
@@ -104,14 +108,12 @@ jobs:
 
 {%- endif %}
       - name: Check documentation is valid
-        working-directory: src
         env:
           RUSTDOCFLAGS: "-D warnings"
         run: cargo doc --no-deps --workspace --all-features --document-private-items --target {% raw %}${{ matrix.target }}{% endraw %}
 
       - name: Run linter
         if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
-        working-directory: src
         run: cargo clippy --workspace --all-features --target {% raw %}${{ matrix.target }}{% endraw %} -- -D warnings
 
 {%- if build_cli %}
@@ -157,7 +159,7 @@ jobs:
           build-library: false
           run-tests-and-coverage: false
           rust-project-path: src/cli
-          workspace-path: src
+          workspace-path: .
           pgo-project-path: src/{{project-name}}
           use-cache: true
 {%- endif %}
@@ -177,7 +179,7 @@ jobs:
       - name: Run Tests and Coverage on WINE
         uses: Reloaded-Project/devops-rust-test-and-coverage@v1
         with:
-          rust-project-path: ./src
+          rust-project-path: ./
           upload-coverage: true
           codecov-token: {% raw %}${{ secrets.CODECOV_TOKEN }}{% endraw %}
           target: {% raw %}${{ matrix.target }}{% endraw %}

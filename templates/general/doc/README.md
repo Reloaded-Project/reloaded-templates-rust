@@ -2,7 +2,7 @@
 
 MkDocs documentation for the {{ gh_reponame }} project.
 
-Open the `doc` folder in VSCode as your workspace for documentation editing.
+Open this folder in VSCode as your workspace for documentation editing.
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ Open the `doc` folder in VSCode as your workspace for documentation editing.
 
 ## Quick Start (Recommended)
 
-From the project root directory:
+From this directory:
 
 ```bash
 python start_docs.py

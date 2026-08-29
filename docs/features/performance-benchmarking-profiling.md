@@ -11,7 +11,6 @@ The template provides the essential building blocks for benchmarking and profili
 Run your first benchmark with a single command:
 
 ```bash
-cd src
 cargo bench
 ```
 
@@ -33,8 +32,6 @@ Open the file in your web browser or right-click → "Show Preview" in VSCode.
 Below are some useful additional benchmark commands:
 
 ```bash
-cd src
-
 # Run a specific benchmark
 cargo bench "fib 20"
 
@@ -179,7 +176,6 @@ cargo install cargo-flamegraph
 **Profile a benchmark:**
 
 ```bash
-cd src
 cargo flamegraph --bench my_benchmark --profile profile -- --bench --profile-time 10 can_decompress_file_Model
 # On Windows this requires `sudo cargo`, or administrator command prompt
 ```
@@ -245,7 +241,6 @@ Visual Studio 2022 Community Profiler showing CPU usage
 Build the benchmark binary without running it:
 
 ```bash
-cd src
 cargo bench --no-run
 ```
 
@@ -336,7 +331,6 @@ criterion_main!(benches);
 Run with:
 
 ```bash
-cd src
 cargo bench
 ```
 

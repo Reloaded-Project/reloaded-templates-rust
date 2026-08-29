@@ -6,4 +6,15 @@ PROMPT-*.MD
 
 # Local Code Review
 .vscode/local-reviews/
-src/.vscode/local-reviews/
+
+# Build Outputs
+/target
+
+# Profiling files
+perf.data.old
+perf.data
+flamegraph.svg
+
+# Code Coverage
+cobertura.xml
+tarpaulin-report.html

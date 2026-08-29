@@ -84,7 +84,6 @@ See [C/C++ Bindings - How to Export Functions](cpp-bindings.md#how-to-export-fun
 **Generate bindings locally:**
 
 ```bash
-cd src
 cargo build --features c-exports  # Generate C# bindings and NuGet package
 ```
 

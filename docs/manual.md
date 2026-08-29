@@ -53,9 +53,9 @@ Choose what you want to work on:
     Some features below (e.g. `benchmarks`, `fuzzing`, `bindings`) are only included in certain project configurations.<br/>
     You can use the `Integrate with Non-Template Projects` section(s) under the `Features` pages to add them to an existing project.
 
-Open the `src` folder in your code editor for source development.
+Open the project root in your code editor for development.
 
-**For CLI users:** All commands below assume you're in the `src` directory.
+**For CLI users:** All commands below assume you're in the project root directory.
 
 ### How to Build
 
@@ -66,7 +66,6 @@ Press `Ctrl+Shift+B` to open the build task menu. Select `rust: cargo build`.
 **From Command Line:**
 
 ```bash
-cd src
 cargo build  # for debug builds
 cargo build --release  # for optimized release builds
 ```
@@ -83,7 +82,6 @@ cargo build --release  # for optimized release builds
 **From Command Line:**
 
 ```bash
-cd src
 cargo run  # run debug build
 cargo run --release  # run optimized release build
 ```
@@ -122,7 +120,6 @@ Pre-configured development tasks for testing and coverage
 **From Command Line:**
 
 ```bash
-cd src
 cargo test  # run all tests
 ```
 
@@ -153,7 +150,6 @@ Clippy integration provides advanced linting out of the box
 **From Command Line:**
 
 ```bash
-cd src
 cargo clippy --workspace --all-features -- -D warnings
 ```
 
@@ -177,7 +173,6 @@ The template is configured to auto-format on save when using VSCode. No manual a
 **From Command Line:**
 
 ```bash
-cd src
 cargo fmt
 ```
 
@@ -245,7 +240,6 @@ rustup +nightly component add miri
 Run Miri tests in your project:
 
 ```bash
-cd src
 cargo +nightly miri test
 
 # Run a single test
@@ -266,7 +260,6 @@ cargo +nightly miri test test_name
 **Run benchmarks:**
 
 ```bash
-cd src
 cargo bench  # run all benchmarks
 ```
 
@@ -346,14 +339,12 @@ Generate flamegraph:
 === "Linux & macOS"
 
     ```bash
-    cd src
     cargo flamegraph --bench my_benchmark --profile profile -- --bench
     ```
 
 === "Windows"
 
     ```bash
-    cd src
     # Requires administrator privileges - run in admin command prompt or with sudo
     sudo cargo flamegraph --bench my_benchmark --profile profile -- --bench
     ```
@@ -402,7 +393,6 @@ Interactive flamegraph showing function call hierarchy and time spent
     Use Visual Studio Profiler for detailed analysis. First, build benchmarks:
 
     ```bash
-    cd src
     cargo bench --no-run
     ```
 
@@ -472,7 +462,6 @@ rustup component add llvm-tools-preview
 **Use in your project:**
 
 ```bash
-cd src
 cargo pgo instrument test  # collect profiling data
 cargo bench  # establish baseline
 cargo pgo optimize bench  # build with PGO and compare
@@ -605,7 +594,6 @@ cargo install cross --git https://github.com/cross-rs/cross
 **Use in your project:**
 
 ```bash
-cd src
 cross build --target x86_64-pc-windows-gnu  # build for Windows
 cross test --target aarch64-unknown-linux-gnu --release  # test for ARM64 Linux
 ```
@@ -645,16 +633,14 @@ Using VSCode, press `Ctrl+Shift+P` → "Run Task" → Select one of:
 Or from command line:
 
 ```bash
-cd src
-
 # Install cbindgen (one-time setup)
 cargo install cbindgen
 
 # Generate C bindings
-cbindgen --config ../.github/cbindgen_c.toml --output bindings/c/your-project.h your-project
+cbindgen --config .github/cbindgen_c.toml --output src/bindings/c/your-project.h src/your-project
 
 # Generate C++ bindings
-cbindgen --config ../.github/cbindgen_cpp.toml --output bindings/cpp/your-project.hpp your-project
+cbindgen --config .github/cbindgen_cpp.toml --output src/bindings/cpp/your-project.hpp src/your-project
 ```
 
 Replace `your-project` with your actual project name. Configuration files are located in `.github/`:

@@ -47,7 +47,6 @@ The testing process involves three steps: baseline measurement, profiling collec
 Run an instrumented benchmark to collect profiling data:
 
 ```bash
-cd src
 cargo pgo instrument test -- --bench my_benchmark --features pgo
 ```
 
@@ -58,7 +57,6 @@ This may also run the regular tests.
 Establish a performance baseline without PGO:
 
 ```bash
-cd src
 cargo bench
 ```
 
@@ -72,7 +70,6 @@ Initial benchmark run to establish performance baseline
 Create the PGO-optimized build and compare results:
 
 ```bash
-cd src
 cargo pgo optimize bench
 ```
 
