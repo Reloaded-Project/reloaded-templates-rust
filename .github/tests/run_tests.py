@@ -167,6 +167,7 @@ def run_integration_test(
         print_info(f"  C# Bindings: {config['BuildCSharpLibs']}")
         print_info(f"  CLI: {config['BuildCli']}")
         print_info(f"  Fuzz: {config['Fuzz']}")
+        print_info(f"  rust-llm-tidy: {config['RustLlmTidy']}")
         print()
         
         # Build command line arguments
@@ -188,7 +189,8 @@ def run_integration_test(
             f"--publish-crate-on-tag={'true' if config['PublishCrateOnTag'] else 'false'}",
             f"--license={config['License']}",
             f"--no-std={config['NoStd']}",
-            f"--fuzz={'true' if config['Fuzz'] else 'false'}"
+            f"--fuzz={'true' if config['Fuzz'] else 'false'}",
+            f"--rust-llm-tidy={'true' if config['RustLlmTidy'] else 'false'}"
         ]
         
         # Run the test
@@ -226,6 +228,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': True,
             'Miri': False,
             'Fuzz': False,
+            'RustLlmTidy': True,
             'BuildCLibs': True,
             'BuildCSharpLibs': False,
             'BuildWithPgo': True,
@@ -245,6 +248,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': True,
             'Miri': True,
             'Fuzz': True,
+            'RustLlmTidy': True,
             'BuildCLibs': True,
             'BuildCSharpLibs': True,
             'BuildWithPgo': True,
@@ -264,6 +268,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': False,
             'Miri': False,
             'Fuzz': False,
+            'RustLlmTidy': False,
             'BuildCLibs': False,
             'BuildCSharpLibs': False,
             'BuildWithPgo': False,
@@ -283,6 +288,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': True,
             'Miri': False,
             'Fuzz': False,
+            'RustLlmTidy': True,
             'BuildCLibs': True,
             'BuildCSharpLibs': True,
             'BuildWithPgo': True,
@@ -302,6 +308,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': True,
             'Miri': False,
             'Fuzz': False,
+            'RustLlmTidy': True,
             'BuildCLibs': True,
             'BuildCSharpLibs': False,
             'BuildWithPgo': True,
@@ -321,6 +328,7 @@ def get_test_configurations() -> Dict[str, Dict[str, Any]]:
             'Bench': True,
             'Miri': False,
             'Fuzz': False,
+            'RustLlmTidy': True,
             'BuildCLibs': True,
             'BuildCSharpLibs': False,
             'BuildWithPgo': True,

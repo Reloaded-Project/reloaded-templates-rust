@@ -62,6 +62,7 @@ class TemplateTestConfig:
         self.bench = args.bench
         self.miri = args.miri
         self.fuzz = args.fuzz
+        self.rust_llm_tidy = args.rust_llm_tidy
         self.build_c_libs = args.build_c_libs
         self.build_csharp_libs = args.build_csharp_libs
         self.build_with_pgo = args.build_with_pgo
@@ -174,6 +175,24 @@ class TemplateValidator:
         else:
             errors += self._check_not_exists("src/fuzz", "Fuzz directory")
 
+        # rust-llm-tidy validation
+        if self.config.rust_llm_tidy:
+            errors += self._check_exists(
+                ".rust-llm-tidy.yml", "rust-llm-tidy config"
+            )
+            errors += self._check_exists(
+                ".github/workflows/tidy.yml", "Tidy workflow"
+            )
+            errors += self._validate_tidy_workflow()
+            errors += self._validate_tidy_config()
+        else:
+            errors += self._check_not_exists(
+                ".rust-llm-tidy.yml", "rust-llm-tidy config"
+            )
+            errors += self._check_not_exists(
+                ".github/workflows/tidy.yml", "Tidy workflow"
+            )
+
         # CLI validation
         if self.config.build_cli:
             errors += self._check_exists("src/cli/Cargo.toml", "CLI Cargo.toml")
@@ -188,6 +207,16 @@ class TemplateValidator:
 
         # Essential files validation
         errors += self._check_exists("Cargo.toml", "Workspace Cargo.toml")
+
+        # Template version marker: every release bumps this deliberately.
+        marker = self.project_path / ".github" / "template-version.txt"
+        if marker.exists():
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.0":
+                logger.error("✗ template-version.txt does not match 1.4.0")
+                errors += 1
+        else:
+            logger.error("✗ template-version.txt not found")
+            errors += 1
 
         # The pre-v1.3.0 layout must be fully vacated after the workspace-root move
         for legacy in ("src/Cargo.toml", "src/.cargo", "src/.vscode", "src/doc"):
@@ -318,6 +347,65 @@ class TemplateValidator:
         for license_file in unwanted:
             errors += self._check_not_exists(license_file, f"Unused {license_file}")
 
+        return errors
+
+    def _validate_tidy_workflow(self) -> int:
+        """Validate the tidy workflow keeps its CI contract."""
+        workflow_path = self.project_path / ".github" / "workflows" / "tidy.yml"
+        if not workflow_path.exists():
+            return 0
+
+        content = workflow_path.read_text()
+        required = (
+            "pull_request:",
+            "contents: write",
+            "pull-requests: write",
+            "uses: Sewer56/rust-llm-tidy-action@v1",
+            "mode: apply",
+            'changed-files: "true"',
+            "ref: ${{ github.head_ref }}",
+            'release-tag: "0.4.1"',
+            "cancel-in-progress: true",
+        )
+        errors = 0
+        for fragment in required:
+            if fragment not in content:
+                logger.error(f"✗ tidy.yml missing: {fragment}")
+                errors += 1
+
+        if errors == 0:
+            logger.debug("✓ Tidy workflow validation passed")
+        return errors
+
+    def _validate_tidy_config(self) -> int:
+        """Validate the tidy config lists every supported check."""
+        config_path = self.project_path / ".rust-llm-tidy.yml"
+        if not config_path.exists():
+            return 0
+
+        content = config_path.read_text()
+        required_rules = (
+            "tables",
+            "fences",
+            "links",
+            "reorder",
+            "vis",
+            "DOC001",
+            "DOC002",
+            "DOC003",
+            "DOC004",
+            "DOC005",
+            "DOC006",
+            "TEST001",
+        )
+        errors = 0
+        for rule in required_rules:
+            if f"- {rule}" not in content:
+                logger.error(f"✗ .rust-llm-tidy.yml missing rule: {rule}")
+                errors += 1
+
+        if errors == 0:
+            logger.debug("✓ Tidy config validation passed")
         return errors
 
     def _validate_fuzz_target_header(self) -> int:
@@ -706,6 +794,34 @@ class TemplateValidator:
         return True
 
 
+def validate_template_defaults() -> bool:
+    """Pin the rust-llm-tidy opt-out contract in cargo-generate.toml."""
+    logger.info("Validating template defaults...")
+    repo_root = Path(__file__).parent.parent.parent
+    template_toml = repo_root / "templates" / "general" / "cargo-generate.toml"
+
+    with open(template_toml, "rb") as f:
+        template = tomllib.load(f)
+
+    errors = 0
+    tidy = template["placeholders"]["rust_llm_tidy"]
+    if tidy.get("default") is not True:
+        logger.error("✗ rust_llm_tidy must default to true (opt-out)")
+        errors += 1
+
+    ignore = template["conditional"]["rust_llm_tidy == false"]["ignore"]
+    if sorted(ignore) != [".github/workflows/tidy.yml", ".rust-llm-tidy.yml"]:
+        logger.error("✗ rust_llm_tidy == false must ignore config and workflow")
+        errors += 1
+
+    if errors == 0:
+        logger.info("✓ Template defaults validation passed")
+        return True
+
+    logger.error(f"✗ Template defaults validation failed with {errors} error(s)")
+    return False
+
+
 def generate_project(
     config: TemplateTestConfig, temp_dir: Path
 ) -> Tuple[bool, Optional[Path]]:
@@ -755,6 +871,8 @@ def generate_project(
         f"miri={str(config.miri).lower()}",
         "--define",
         f"fuzz={str(config.fuzz).lower()}",
+        "--define",
+        f"rust_llm_tidy={str(config.rust_llm_tidy).lower()}",
         "--define",
         f"build_c_libs={str(config.build_c_libs).lower()}",
         "--define",
@@ -862,6 +980,12 @@ def parse_args() -> argparse.Namespace:
         help="Include fuzz testing configuration (default: false)",
     )
     parser.add_argument(
+        "--rust-llm-tidy",
+        type=lambda x: x.lower() == "true",
+        default=True,
+        help="Include rust-llm-tidy CI (default: true)",
+    )
+    parser.add_argument(
         "--build-c-libs",
         type=lambda x: x.lower() == "true",
         default=True,
@@ -915,6 +1039,10 @@ def main() -> int:
     logger.info(f"Using temporary directory: {temp_dir}")
 
     try:
+        # Fail fast: the opt-out contract lives in the template itself.
+        if not validate_template_defaults():
+            return 1
+
         # Generate project
         success, project_path = generate_project(config, temp_dir)
         if not success or project_path is None:

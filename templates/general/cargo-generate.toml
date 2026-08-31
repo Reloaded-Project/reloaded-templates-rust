@@ -95,6 +95,15 @@ default = false
 [conditional.'fuzz == false']
 ignore = ["src/fuzz"]
 
+## rust-llm-tidy
+[placeholders.rust_llm_tidy]
+type = "bool"
+prompt = "Include rust-llm-tidy CI? (Auto-tidies changed Rust and Markdown files on pull requests)"
+default = true
+
+[conditional.'rust_llm_tidy == false']
+ignore = [".rust-llm-tidy.yml", ".github/workflows/tidy.yml"]
+
 ## Build C Libraries
 [placeholders.build_c_libs]
 type = "bool"

@@ -1,0 +1,32 @@
+name: Tidy
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "**/*.md"
+      - ".rust-llm-tidy.yml"
+
+concurrency:
+  group: {% raw %}${{ github.workflow }}-${{ github.event.pull_request.number }}{% endraw %}
+  cancel-in-progress: true
+
+jobs:
+  tidy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: {% raw %}${{ github.head_ref }}{% endraw %}
+          submodules: recursive
+
+      # Runs my linter.
+      - name: Run rust-llm-tidy
+        uses: Sewer56/rust-llm-tidy-action@v1
+        with:
+          mode: apply
+          changed-files: "true"
+          release-tag: "0.4.1"
