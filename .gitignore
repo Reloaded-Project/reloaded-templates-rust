@@ -27,3 +27,6 @@ venv/
 __pycache__/
 *.pyc
 site/
+
+# Agent run artifacts
+artifact/
