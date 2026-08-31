@@ -1,1 +1,0 @@
-@src/AGENTS.md
