@@ -23,6 +23,7 @@ For information about migrating between template versions, see the following gui
 - **[v1.3.0]** - Project root becomes the workspace: docs to `doc/`, manifest to root, `.cargo` to `.llm`
 - **[v1.4.0]** - Add rust-llm-tidy CI: auto-tidies changed files on pull requests
 - **[v1.4.1]** - Remove root `AGENTS.md` shim, move style rule to `.llm/general.md`
+- **[v1.4.2]** - Slim `.llm` guidance, tidy in verify, `core` over `std` lint
 
 [v1.0.0]: v1.0.0.md
 [v1.0.1]: v1.0.1.md
@@ -36,3 +37,4 @@ For information about migrating between template versions, see the following gui
 [v1.3.0]: v1.3.0.md
 [v1.4.0]: v1.4.0.md
 [v1.4.1]: v1.4.1.md
+[v1.4.2]: v1.4.2.md
