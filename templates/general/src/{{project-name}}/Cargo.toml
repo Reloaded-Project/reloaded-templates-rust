@@ -12,6 +12,9 @@ readme = "README.MD"
 # categories (fixed list): https://crates.io/categories
 # categories = ["development-tools"]
 
+[lints]
+workspace = true
+
 [features]
 {% if std-by-default -%}
 default = ["std"]

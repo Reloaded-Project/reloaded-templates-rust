@@ -211,8 +211,8 @@ class TemplateValidator:
         # Template version marker: every release bumps this deliberately.
         marker = self.project_path / ".github" / "template-version.txt"
         if marker.exists():
-            if marker.read_text().strip() != "reloaded-templates-rust:1.4.1":
-                logger.error("✗ template-version.txt does not match 1.4.1")
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.2":
+                logger.error("✗ template-version.txt does not match 1.4.2")
                 errors += 1
         else:
             logger.error("✗ template-version.txt not found")
@@ -644,7 +644,7 @@ class TemplateValidator:
         return True
 
     def validate_v1_1_4_template_updates(self) -> bool:
-        """Validate v1.1.4 template changes (format-check job, AGENTS.md, guidance files, verify headers) and v1.3.0 workspace-root workflow paths."""
+        """Validate v1.1.4 template updates (format-check job, AGENTS.md, verify headers) plus v1.3.0 workflow paths and v1.4.2 guidance/lint pins."""
         logger.info("Validating v1.1.4 template updates...")
         errors = 0
 
@@ -702,31 +702,50 @@ class TemplateValidator:
             agents_text = agents_path.read_text()
             for line in (
                 "After changes, find and run `.llm/verify.{sh,ps1}` to test + lint.",
-                "If relevant to your review task, read `.llm/{general,performance,documentation}.md`.",
+                "Print all output.",
+                "Performance:",
+                "- Keep dependency footprint minimal.",
             ):
                 if line not in agents_text:
                     logger.error(f"✗ src/AGENTS.md missing guidance line: {line}")
                     errors += 1
+
+            if ".llm/{general,performance,documentation}.md" in agents_text:
+                logger.error("✗ src/AGENTS.md still references deleted guidance files")
+                errors += 1
         else:
             logger.error("✗ src/AGENTS.md not found")
             errors += 1
 
-        guidance_files = [
-            ("src/.llm/general.md", "# General Rules"),
-            ("src/.llm/performance.md", "# Performance Rules"),
-            ("src/.llm/documentation.md", "# Documentation Rules"),
-        ]
-        for rel_path, heading in guidance_files:
-            file_path = self.project_path / rel_path
-            if not file_path.exists():
-                logger.error(f"✗ Guidance file not found: {rel_path}")
+        # v1.4.2: guidance is inlined into src/AGENTS.md; guidance files deleted.
+        for legacy in (
+            "src/.llm/general.md",
+            "src/.llm/performance.md",
+            "src/.llm/documentation.md",
+        ):
+            errors += self._check_not_exists(legacy, f"Deleted guidance file {legacy}")
+
+        # v1.4.2: core over std is enforced via the std_instead_of_core Clippy lint.
+        workspace_manifest = self.project_path / "Cargo.toml"
+        if not workspace_manifest.exists():
+            logger.error("✗ Workspace Cargo.toml not found")
+            errors += 1
+        elif "std_instead_of_core" not in workspace_manifest.read_text():
+            logger.error("✗ Workspace Cargo.toml missing std_instead_of_core lint")
+            errors += 1
+
+        member_manifests = [f"src/{self.config.project_name}/Cargo.toml"]
+        if self.config.build_cli:
+            member_manifests.append("src/cli/Cargo.toml")
+        for rel_path in member_manifests:
+            manifest = self.project_path / rel_path
+            if not manifest.exists():
+                logger.error(f"✗ Member manifest not found: {rel_path}")
                 errors += 1
             else:
-                content = file_path.read_text()
-                if heading not in content:
-                    logger.error(
-                        f"✗ Guidance file {rel_path} missing heading: {heading}"
-                    )
+                text = manifest.read_text()
+                if "[lints]" not in text or "workspace = true" not in text:
+                    logger.error(f"✗ {rel_path} missing lint inheritance")
                     errors += 1
 
         gitignore_path = self.project_path / ".gitignore"
@@ -739,15 +758,29 @@ class TemplateValidator:
             logger.error("✗ .gitignore not found")
             errors += 1
 
-        for verify_rel in ["src/.llm/verify.sh", "src/.llm/verify.ps1"]:
+        # v1.4.2: tidy runs last, after the publish dry-run.
+        verify_scripts = [
+            ("src/.llm/verify.sh", "run_cmd rust-llm-tidy"),
+            ("src/.llm/verify.ps1", 'Invoke-LoggedCommand "rust-llm-tidy"'),
+        ]
+        for verify_rel, invocation in verify_scripts:
             verify_path = self.project_path / verify_rel
             if verify_path.exists():
                 verify_text = verify_path.read_text()
-                if (
-                    "Script is relative to git repo root; search if not found"
-                    not in verify_text
+                for fragment in (
+                    "Script is relative to git repo root; search if not found",
+                    invocation,
+                    "cargo install rust-llm-tidy-cli",
                 ):
-                    logger.error(f"✗ {verify_rel} missing new path comment")
+                    if fragment not in verify_text:
+                        logger.error(f"✗ {verify_rel} missing: {fragment}")
+                        errors += 1
+
+                dry_run = verify_text.find("--dry-run")
+                if dry_run == -1 or verify_text.find(invocation) < dry_run:
+                    logger.error(
+                        f"✗ {verify_rel} tidy step must follow the publish dry-run"
+                    )
                     errors += 1
             else:
                 logger.error(f"✗ {verify_rel} not found")

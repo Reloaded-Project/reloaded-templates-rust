@@ -5,6 +5,11 @@
 resolver = "2"
 members = ["src/{{project-name}}"{% if build_cli %}, "src/cli"{% endif %}]
 
+# Inherited by members via `[lints] workspace = true`.
+[workspace.lints.clippy]
+# Prefer `core` over `std` where both work.
+std_instead_of_core = "warn"
+
 # Profile Build
 [profile.profile]
 inherits = "release"

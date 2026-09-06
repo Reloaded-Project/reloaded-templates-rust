@@ -11,5 +11,8 @@ readme = "README.MD"
 # categories (fixed list): https://crates.io/categories
 # categories = ["command-line-utilities"]
 
+[lints]
+workspace = true
+
 [dependencies]
 {{project-name}} = { path = "../{{project-name}}" }
