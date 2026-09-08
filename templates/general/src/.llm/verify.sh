@@ -33,6 +33,16 @@ run_cmd() {
   return 0
 }
 
+echo "Formatting..."
+run_cmd cargo fmt --all --quiet
+
+echo "Tidy..."
+if command -v rust-llm-tidy >/dev/null 2>&1; then
+  run_cmd rust-llm-tidy
+else
+  echo "Skipping; rust-llm-tidy not installed. Install: cargo install rust-llm-tidy-cli"
+fi
+
 echo "Building..."
 run_cmd cargo build --workspace --all-features --all-targets --quiet
 
@@ -45,18 +55,8 @@ run_cmd cargo clippy --workspace --all-features --quiet -- -D warnings
 echo "Docs..."
 run_cmd env RUSTDOCFLAGS="-D warnings" cargo doc --workspace --all-features --no-deps --document-private-items --quiet
 
-echo "Formatting..."
-run_cmd cargo fmt --all --quiet
-
 echo "Publish dry-run..."
 run_cmd cargo publish --dry-run --allow-dirty --quiet --workspace
-
-echo "Tidy..."
-if command -v rust-llm-tidy >/dev/null 2>&1; then
-  run_cmd rust-llm-tidy
-else
-  echo "Skipping; rust-llm-tidy not installed. Install: cargo install rust-llm-tidy-cli"
-fi
 
 if [ "$EXIT_CODE" -eq 0 ]; then
   echo "All checks passed!"

@@ -58,6 +58,16 @@ function Invoke-LoggedCommand {
 }
 
 try {
+    Write-Host "Formatting..."
+    Invoke-LoggedCommand "cargo" @("fmt", "--all", "--quiet")
+
+    Write-Host "Tidy..."
+    if (Get-Command rust-llm-tidy -ErrorAction SilentlyContinue) {
+        Invoke-LoggedCommand "rust-llm-tidy" @()
+    } else {
+        Write-Host "Skipping; rust-llm-tidy not installed. Install: cargo install rust-llm-tidy-cli"
+    }
+
     Write-Host "Building..."
     Invoke-LoggedCommand "cargo" @("build", "--workspace", "--all-features", "--all-targets", "--quiet")
 
@@ -75,18 +85,8 @@ try {
         $env:RUSTDOCFLAGS = $originalRustdocFlags
     }
 
-    Write-Host "Formatting..."
-    Invoke-LoggedCommand "cargo" @("fmt", "--all", "--quiet")
-
     Write-Host "Publish dry-run..."
     Invoke-LoggedCommand "cargo" @("publish", "--dry-run", "--allow-dirty", "--quiet", "--workspace")
-
-    Write-Host "Tidy..."
-    if (Get-Command rust-llm-tidy -ErrorAction SilentlyContinue) {
-        Invoke-LoggedCommand "rust-llm-tidy" @()
-    } else {
-        Write-Host "Skipping; rust-llm-tidy not installed. Install: cargo install rust-llm-tidy-cli"
-    }
 } finally {
     $env:RUSTDOCFLAGS = $originalRustdocFlags
     Set-Location $originalDir

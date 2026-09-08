@@ -211,8 +211,8 @@ class TemplateValidator:
         # Template version marker: every release bumps this deliberately.
         marker = self.project_path / ".github" / "template-version.txt"
         if marker.exists():
-            if marker.read_text().strip() != "reloaded-templates-rust:1.4.2":
-                logger.error("✗ template-version.txt does not match 1.4.2")
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.3":
+                logger.error("✗ template-version.txt does not match 1.4.3")
                 errors += 1
         else:
             logger.error("✗ template-version.txt not found")
@@ -644,7 +644,7 @@ class TemplateValidator:
         return True
 
     def validate_v1_1_4_template_updates(self) -> bool:
-        """Validate v1.1.4 template updates (format-check job, AGENTS.md, verify headers) plus v1.3.0 workflow paths and v1.4.2 guidance/lint pins."""
+        """Validate v1.1.4 template updates (format-check job, AGENTS.md, verify headers) plus v1.3.0 workflow paths, v1.4.2 lint pins and the v1.4.3 verify order."""
         logger.info("Validating v1.1.4 template updates...")
         errors = 0
 
@@ -758,30 +758,42 @@ class TemplateValidator:
             logger.error("✗ .gitignore not found")
             errors += 1
 
-        # v1.4.2: tidy runs last, after the publish dry-run.
+        # v1.4.3: file-altering steps (fmt, tidy) run first, before the build.
         verify_scripts = [
-            ("src/.llm/verify.sh", "run_cmd rust-llm-tidy"),
-            ("src/.llm/verify.ps1", 'Invoke-LoggedCommand "rust-llm-tidy"'),
+            (
+                "src/.llm/verify.sh",
+                "run_cmd rust-llm-tidy",
+                "run_cmd cargo fmt",
+                "run_cmd cargo build",
+            ),
+            (
+                "src/.llm/verify.ps1",
+                'Invoke-LoggedCommand "rust-llm-tidy"',
+                'Invoke-LoggedCommand "cargo" @("fmt"',
+                'Invoke-LoggedCommand "cargo" @("build"',
+            ),
         ]
-        for verify_rel, invocation in verify_scripts:
+        for verify_rel, tidy_step, fmt_step, build_step in verify_scripts:
             verify_path = self.project_path / verify_rel
             if verify_path.exists():
                 verify_text = verify_path.read_text()
                 for fragment in (
                     "Script is relative to git repo root; search if not found",
-                    invocation,
+                    tidy_step,
                     "cargo install rust-llm-tidy-cli",
                 ):
                     if fragment not in verify_text:
                         logger.error(f"✗ {verify_rel} missing: {fragment}")
                         errors += 1
 
-                dry_run = verify_text.find("--dry-run")
-                if dry_run == -1 or verify_text.find(invocation) < dry_run:
-                    logger.error(
-                        f"✗ {verify_rel} tidy step must follow the publish dry-run"
-                    )
-                    errors += 1
+                build_index = verify_text.find(build_step)
+                for step_name, step in (("formatting", fmt_step), ("tidy", tidy_step)):
+                    step_index = verify_text.find(step)
+                    if step_index == -1 or step_index > build_index:
+                        logger.error(
+                            f"✗ {verify_rel} {step_name} step must precede the build"
+                        )
+                        errors += 1
             else:
                 logger.error(f"✗ {verify_rel} not found")
                 errors += 1

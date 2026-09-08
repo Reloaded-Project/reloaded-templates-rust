@@ -24,6 +24,7 @@ For information about migrating between template versions, see the following gui
 - **[v1.4.0]** - Add rust-llm-tidy CI: auto-tidies changed files on pull requests
 - **[v1.4.1]** - Remove root `AGENTS.md` shim, move style rule to `.llm/general.md`
 - **[v1.4.2]** - Slim `.llm` guidance, tidy in verify, `core` over `std` lint
+- **[v1.4.3]** - Verify scripts run the file-altering steps first
 
 [v1.0.0]: v1.0.0.md
 [v1.0.1]: v1.0.1.md
@@ -38,3 +39,4 @@ For information about migrating between template versions, see the following gui
 [v1.4.0]: v1.4.0.md
 [v1.4.1]: v1.4.1.md
 [v1.4.2]: v1.4.2.md
+[v1.4.3]: v1.4.3.md
