@@ -211,8 +211,8 @@ class TemplateValidator:
         # Template version marker: every release bumps this deliberately.
         marker = self.project_path / ".github" / "template-version.txt"
         if marker.exists():
-            if marker.read_text().strip() != "reloaded-templates-rust:1.4.4":
-                logger.error("✗ template-version.txt does not match 1.4.4")
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.5":
+                logger.error("✗ template-version.txt does not match 1.4.5")
                 errors += 1
         else:
             logger.error("✗ template-version.txt not found")
@@ -685,8 +685,10 @@ class TemplateValidator:
         if agents_path.exists():
             agents_text = agents_path.read_text()
             for line in (
-                "After changes, find and run `.llm/verify.{sh,ps1}` to test + lint.",
-                "Print all output.",
+                "After changes, run your platform's `verify.sh` or `verify.ps1` in `.llm/` or",
+                "`src/.llm/` if present.",
+                "It runs project verification, including tests and linting.",
+                "Print all output; do not repeat checks it already runs.",
                 "Performance:",
                 "- Keep dependency footprint minimal.",
             ):

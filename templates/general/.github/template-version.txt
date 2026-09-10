@@ -1,1 +1,1 @@
-reloaded-templates-rust:1.4.4
+reloaded-templates-rust:1.4.5
