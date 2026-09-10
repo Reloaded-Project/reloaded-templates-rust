@@ -211,8 +211,8 @@ class TemplateValidator:
         # Template version marker: every release bumps this deliberately.
         marker = self.project_path / ".github" / "template-version.txt"
         if marker.exists():
-            if marker.read_text().strip() != "reloaded-templates-rust:1.4.3":
-                logger.error("✗ template-version.txt does not match 1.4.3")
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.4":
+                logger.error("✗ template-version.txt does not match 1.4.4")
                 errors += 1
         else:
             logger.error("✗ template-version.txt not found")
@@ -360,11 +360,10 @@ class TemplateValidator:
             "pull_request:",
             "contents: write",
             "pull-requests: write",
-            "uses: Sewer56/rust-llm-tidy-action@v1",
+            "uses: Sewer56/rust-llm-tidy-action@v2",
             "mode: apply",
             'changed-files: "true"',
             "ref: ${{ github.head_ref }}",
-            'release-tag: "0.4.1"',
             "cancel-in-progress: true",
         )
         errors = 0

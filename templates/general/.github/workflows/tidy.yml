@@ -25,8 +25,7 @@ jobs:
 
       # Runs my linter.
       - name: Run rust-llm-tidy
-        uses: Sewer56/rust-llm-tidy-action@v1
+        uses: Sewer56/rust-llm-tidy-action@v2
         with:
           mode: apply
           changed-files: "true"
-          release-tag: "0.4.1"
