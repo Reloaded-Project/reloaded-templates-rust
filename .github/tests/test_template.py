@@ -377,31 +377,16 @@ class TemplateValidator:
         return errors
 
     def _validate_tidy_config(self) -> int:
-        """Validate the tidy config lists every supported check."""
+        """Validate the tidy config uses the tool's default checks."""
         config_path = self.project_path / ".rust-llm-tidy.yml"
         if not config_path.exists():
             return 0
 
         content = config_path.read_text()
-        required_rules = (
-            "tables",
-            "fences",
-            "links",
-            "reorder",
-            "vis",
-            "DOC001",
-            "DOC002",
-            "DOC003",
-            "DOC004",
-            "DOC005",
-            "DOC006",
-            "TEST001",
-        )
         errors = 0
-        for rule in required_rules:
-            if f"- {rule}" not in content:
-                logger.error(f"✗ .rust-llm-tidy.yml missing rule: {rule}")
-                errors += 1
+        if "include:" in content:
+            logger.error("✗ .rust-llm-tidy.yml should use default checks")
+            errors += 1
 
         if errors == 0:
             logger.debug("✓ Tidy config validation passed")
