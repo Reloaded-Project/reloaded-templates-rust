@@ -1,5 +1,8 @@
-After changes, find and run `.llm/verify.{sh,ps1}` to test + lint.
-Print all output.
+After changes, run your platform's `verify.sh` or `verify.ps1` in `.llm/` or
+`src/.llm/` if present.
+
+It runs project verification, including tests and linting.
+Print all output; do not repeat checks it already runs.
 
 Performance:
 

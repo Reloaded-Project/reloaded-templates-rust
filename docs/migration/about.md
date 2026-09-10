@@ -26,6 +26,7 @@ For information about migrating between template versions, see the following gui
 - **[v1.4.2]** - Slim `.llm` guidance, tidy in verify, `core` over `std` lint
 - **[v1.4.3]** - Verify scripts run the file-altering steps first
 - **[v1.4.4]** - Update rust-llm-tidy action to v2
+- **[v1.4.5]** - Update the verification script path in `src/AGENTS.md`
 
 [v1.0.0]: v1.0.0.md
 [v1.0.1]: v1.0.1.md
@@ -42,3 +43,4 @@ For information about migrating between template versions, see the following gui
 [v1.4.2]: v1.4.2.md
 [v1.4.3]: v1.4.3.md
 [v1.4.4]: v1.4.4.md
+[v1.4.5]: v1.4.5.md
