@@ -1,29 +1,5 @@
 # rust-llm-tidy config.
 #
-# All checks the tool currently supports are listed. New tool release? Add
-# its new checks here; unlisted checks stay off.
-#
-# Upstream references:
-# - Tool's own config: https://github.com/Sewer56/rust-llm-tidy/blob/main/.rust-llm-tidy.yml
+# Upstream reference:
 # - All options: https://github.com/Sewer56/rust-llm-tidy/blob/main/.rust-llm-tidy.example.yml
-
-include:
-  # paths omitted: rules apply to all files.
-  - rules:
-      # Level 1: Markdown/doc-comment formatting.
-      - tables
-      - fences
-      - links
-
-      # Level 2: Rust source cleanup.
-      - reorder
-      - vis
-
-      # Level 3: documentation and test-name checks, pinned individually.
-      - DOC001
-      - DOC002
-      - DOC003
-      - DOC004
-      - DOC005
-      - DOC006
-      - TEST001
+{}
