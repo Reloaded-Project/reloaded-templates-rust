@@ -211,8 +211,8 @@ class TemplateValidator:
         # Template version marker: every release bumps this deliberately.
         marker = self.project_path / ".github" / "template-version.txt"
         if marker.exists():
-            if marker.read_text().strip() != "reloaded-templates-rust:1.4.5":
-                logger.error("✗ template-version.txt does not match 1.4.5")
+            if marker.read_text().strip() != "reloaded-templates-rust:1.4.6":
+                logger.error("✗ template-version.txt does not match 1.4.6")
                 errors += 1
         else:
             logger.error("✗ template-version.txt not found")
